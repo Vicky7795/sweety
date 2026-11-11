@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -36,9 +36,8 @@ temp/
 tmp/
 *.tmp
 
-# Embedded Postgres data directory
+# Embedded Postgres data directories
 .pgdata/
-
-# Screenshots (generated artifacts)
-screenshots/
+.pgverify/
+*.pgdata/
 
