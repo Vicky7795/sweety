@@ -122,7 +122,7 @@ A production-quality full-stack web application designed for comprehensive blood
 
 ```
 sweety/
-├── client/                     # Frontend React application
+├── frontend/                     # Frontend React application
 │   ├── public/                 # Static assets & favicon
 │   ├── src/
 │   │   ├── components/         # Reusable UI components (Modals, Toast, Chart)
@@ -139,7 +139,7 @@ sweety/
 │   ├── vite.config.js
 │   ├── tailwind.config.js
 │   └── .env.example
-├── server/                     # Backend Node / Express API
+├── backend/                     # Backend Node / Express API
 │   ├── database/
 │   │   ├── schema.sql          # Relational PostgreSQL DDL schema & indexes
 │   │   ├── migrate.js          # Migration runner
@@ -176,8 +176,8 @@ sweety/
 
 ## Environment Variables
 
-### Backend (`server/.env`)
-Create `server/.env` based on `server/.env.example`:
+### Backend (`backend/.env`)
+Create `backend/.env` based on `backend/.env.example`:
 ```env
 PORT=5000
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sweety_db
@@ -187,8 +187,8 @@ CLIENT_URL=http://localhost:5173
 NODE_ENV=development
 ```
 
-### Frontend (`client/.env`)
-Create `client/.env` based on `client/.env.example`:
+### Frontend (`frontend/.env`)
+Create `frontend/.env` based on `frontend/.env.example`:
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
@@ -204,10 +204,10 @@ VITE_API_URL=http://localhost:5000/api
    ```
 2. Apply the schema migration:
    ```bash
-   cd server
+   cd backend
    npm run migrate
    ```
-   Or execute `server/database/schema.sql` directly using `psql`:
+   Or execute `backend/database/schema.sql` directly using `psql`:
    ```bash
    psql -U postgres -d sweety_db -f database/schema.sql
    ```
@@ -237,7 +237,7 @@ VITE_API_URL=http://localhost:5000/api
 
 To populate the database with the required demo user and sample readings:
 ```bash
-cd server
+cd backend
 npm run seed
 ```
 
@@ -258,7 +258,7 @@ The seed script creates realistic glucose readings across:
 
 ### 1. Install Backend Dependencies & Start Server
 ```bash
-cd server
+cd backend
 npm install
 npm run seed
 npm start
@@ -268,7 +268,7 @@ The backend will start on **`http://localhost:5000`**.
 ### 2. Install Frontend Dependencies & Start Client
 Open a second terminal:
 ```bash
-cd client
+cd frontend
 npm install
 npm run dev
 ```
@@ -282,7 +282,7 @@ Open your browser and navigate to: `http://localhost:5173`
 
 ### 1. Backend Automated Tests (Jest & Supertest)
 ```bash
-cd server
+cd backend
 npm test
 ```
 **Test Coverage Includes (20 test cases)**:
@@ -309,7 +309,7 @@ npm test
 
 ### 2. Frontend Automated Tests (Vitest & React Testing Library)
 ```bash
-cd client
+cd frontend
 npm test
 ```
 **Test Coverage Includes**:
@@ -317,6 +317,15 @@ npm test
 - Required-value validation test.
 - Boundary and invalid value rejection test.
 - Successful form submission test.
+
+---
+
+### 3. Real PostgreSQL End-to-End Verification
+```bash
+cd backend
+npm run test:pg
+```
+Verifies all 19 functional criteria (schema migrations, registration, login, profile, CRUD, all 5 validation rules, all 3 reports) against a real live PostgreSQL 18 instance.
 
 ---
 
@@ -444,6 +453,14 @@ This spins up:
 2. **Four Time Slots**: Blood glucose is tracked according to four standard clinical intervals: Morning (fasting), After breakfast, After lunch, and After dinner.
 3. **Date Storage**: Dates are stored as PostgreSQL `DATE` types (`YYYY-MM-DD` strings) without time component to strictly avoid timezone-related date shifts between client and server.
 4. **Monthly Report Definition**: The monthly report refers to the entire previous calendar month relative to the selected reference date.
+
+### Bonus / Out-of-Scope Features Added
+1. **Interactive Monthly Glucose Trend Chart**: Powered by Recharts, showing target clinical boundaries (70 mg/dl and 140 mg/dl) with tooltip inspections and responsive containers.
+2. **Readings Pagination**: Backend and frontend support for paginated readings (`?page=1&limit=10`) to handle long histories smoothly.
+3. **Frontend Automated Component Tests**: Vitest + React Testing Library suite testing form submission and validation errors.
+4. **End-to-End Real PostgreSQL Verification**: Dedicated verification suite (`npm run test:pg` in backend) running all CRUD, validation, and reporting endpoints against an embedded PostgreSQL 18 database.
+5. **Dual-Mode Zero-Config Database**: Automatic fallback to an embedded relational engine if external PostgreSQL is offline, ensuring zero friction for testing.
+6. **Multi-Container Docker Architecture**: `docker-compose.yml` orchestrating PostgreSQL, Express backend, and React frontend with health checks.
 
 ### Limitations
 - The system currently restricts readings strictly to the predefined 4 slots per day.
